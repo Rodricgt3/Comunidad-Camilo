@@ -227,11 +227,14 @@ function Login({ error }: { error: string }) {
       await api.emailLogin(email, password);
     } catch (e) {
       const code = (e as { code?: string }).code;
+      if (code === "auth/email-already-in-use") setRegistering(false);
       setFormError(
         code === "auth/invalid-credential" || code === "auth/wrong-password"
           ? "Correo o contraseña incorrectos."
           : code === "auth/email-already-in-use"
-            ? "Ese correo ya tiene una cuenta. Inicia sesión."
+            ? "Ese correo ya tiene una cuenta. Cambié el formulario a Iniciar sesión; escribe su contraseña y entra."
+            : code === "auth/account-exists-with-different-credential"
+              ? "Ese correo ya está vinculado a Google. Entra con el botón CONTINUAR CON GOOGLE."
             : code === "auth/weak-password"
               ? "La contraseña debe tener al menos 6 caracteres."
               : errorText(e),
@@ -258,7 +261,7 @@ function Login({ error }: { error: string }) {
         </p>
         <div className="glass login-box">
           <h2>Verifica tu acceso</h2>
-          <p>Entra con Google o con correo y contraseña.</p>
+          <p>{registering ? "¿Primera vez? Crea una cuenta." : "¿Ya tienes cuenta? Entra. Si no, créala abajo."}</p>
           <Action
             className="google"
             disabled={!configured}
