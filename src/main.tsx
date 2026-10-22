@@ -497,7 +497,8 @@ function TriviaCard({ trivia: t }: { trivia: Trivia }) {
   );
 }
 function Events() {
-  const state = useLoad(() => api.list<Meet>("events", "date"), []);
+  const { profile } = useSession();
+  const state = useLoad(() => api.listEventsForUser(profile!), [profile?.id]);
   return (
     <>
       <Heading
@@ -516,6 +517,7 @@ function EventCard({ meet: m }: { meet: Meet }) {
   const { profile } = useSession();
   const [show, setShow] = useState(false);
   const [calendarPrompt, setCalendarPrompt] = useState(false);
+  const isPast = m.date.toMillis() < Date.now();
   const state = useLoad(
     () => api.read<Registration>(`events/${m.id}/registrations/${profile!.id}`),
     [m.id],
@@ -523,8 +525,8 @@ function EventCard({ meet: m }: { meet: Meet }) {
   return (
     <article className="glass event">
       <div className="row">
-        <span className="pill">
-          {m.mode === "open"
+        <span className={`pill ${isPast ? "past-pill" : ""}`}>
+          {isPast ? "FINALIZADO" : m.mode === "open"
             ? "ACCESO LIBRE"
             : m.mode === "limited"
               ? "CUPO LIMITADO"
@@ -585,6 +587,8 @@ function EventCard({ meet: m }: { meet: Meet }) {
             Estás en la lista del sorteo. Actualiza para consultar el resultado.
           </p>
         )
+      ) : isPast ? (
+        <p className="status">MEET FINALIZADO · El pase ya no está disponible.</p>
       ) : (
         <Action
           className="btn primary"
@@ -1007,6 +1011,9 @@ function ProfileView() {
   const { profile: p, refresh, notify } = useSession();
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(p?.displayName || "");
+  const [editingStaff, setEditingStaff] = useState(false);
+  const [bio, setBio] = useState(p?.bio || "");
+  const [links, setLinks] = useState<NonNullable<Profile["socialLinks"]>>(p?.socialLinks || []);
   const board = useLoad(() => api.list<Profile>("users", "rpmPoints", 10), []);
   const orders = useLoad(() => api.myOrders(p!.id), [p!.id]);
   const staff = useLoad(() => api.listStaff(), []);
@@ -1078,6 +1085,15 @@ function ProfileView() {
           <span>8K+</span>
         </div>
         <p>+500 RPM por meet · +1,000 RPM por trivia ganada</p>
+        {p?.role !== "member" && <>
+          <button className="text-btn" onClick={() => { setBio(p!.bio || ""); setLinks(p!.socialLinks || []); setEditingStaff(!editingStaff); }}>{editingStaff ? "CERRAR REDES" : "EDITAR BIO Y REDES"}</button>
+          {editingStaff && <form className="staff-profile-editor" onSubmit={async (event) => { event.preventDefault(); try { await api.updateStaffProfile(p!.id, bio, links); await refresh(); setEditingStaff(false); notify("Perfil público del staff actualizado."); } catch (error) { notify(errorText(error)); } }}>
+            <label>Texto corto <textarea value={bio} maxLength={160} onChange={(e) => setBio(e.target.value)} placeholder="Tu texto corto para la comunidad" /></label>
+            {links.map((link, index) => <div className="social-row" key={`${index}-${link.platform}`}><select value={link.platform} onChange={(e) => setLinks((all) => all.map((item, i) => i === index ? { ...item, platform: e.target.value as "instagram" | "tiktok" | "youtube" } : item))}><option value="instagram">Instagram</option><option value="tiktok">TikTok</option><option value="youtube">YouTube</option></select><input type="url" value={link.url} placeholder="https://..." onChange={(e) => setLinks((all) => all.map((item, i) => i === index ? { ...item, url: e.target.value } : item))} /><button type="button" className="text-btn" onClick={() => setLinks((all) => all.filter((_, i) => i !== index))}>QUITAR</button></div>)}
+            {links.length < 5 && <button type="button" className="btn" onClick={() => setLinks((all) => [...all, { platform: "instagram", url: "https://instagram.com/" }])}>+ AÑADIR RED</button>}
+            <button className="btn primary" type="submit">GUARDAR PERFIL PÚBLICO</button>
+          </form>}
+        </>}
       </div>
       <div className="section-title">
         <h2>Tus insignias</h2>
@@ -1115,17 +1131,16 @@ function ProfileView() {
       <AsyncState {...staff} />
       <div className="glass staff-directory">
         {staff.data?.map((member) => (
-          <div className="staff-person" key={member.id}>
+          <details className="staff-person" key={member.id}>
+            <summary>
             <div className="profile-avatar small">
               {member.photoURL ? <img src={member.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserRound />}
             </div>
             <div><strong>{member.displayName}</strong><span>{member.role === "camilo_owner" ? "CAMILO / OWNER" : "SPOTTER STAFF"}</span></div>
-            <div className="staff-socials">
-              {member.socials?.instagram && <a href={safeUrl(member.socials.instagram)} target="_blank" rel="noreferrer" aria-label={`Instagram de ${member.displayName}`}>IG</a>}
-              {member.socials?.youtube && <a href={safeUrl(member.socials.youtube)} target="_blank" rel="noreferrer" aria-label={`YouTube de ${member.displayName}`}>YT</a>}
-              {member.socials?.tiktok && <a href={safeUrl(member.socials.tiktok)} target="_blank" rel="noreferrer" aria-label={`TikTok de ${member.displayName}`}>TK</a>}
-            </div>
-          </div>
+            <ChevronRight size={16} />
+            </summary>
+            <div className="staff-public-detail">{member.bio && <p>{member.bio}</p>}<div className="staff-socials">{member.socialLinks?.map((link, index) => <a key={`${link.platform}-${index}`} href={safeUrl(link.url)} target="_blank" rel="noreferrer">{link.platform.toUpperCase()}</a>)}</div></div>
+          </details>
         ))}
       </div>
       <details className="glass order-list">
@@ -1328,7 +1343,7 @@ function Staff() {
   const [modal, setModal] = useState("");
   const [scan, setScan] = useState(false);
   const ts = useLoad(() => api.list<Trivia>("trivias", "createdAt", 15), []);
-  const es = useLoad(() => api.list<Meet>("events", "date", 15), []);
+  const es = useLoad(() => api.listEventsForUser(p!), [p?.id]);
   const items = useLoad(
     () => api.list<Item>("marketplace", "createdAt", 30),
     [],

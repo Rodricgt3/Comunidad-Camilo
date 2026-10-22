@@ -10,6 +10,8 @@ export interface Profile {
   badges: string[];
   socials?: { instagram?: string; youtube?: string; tiktok?: string };
   displayNameChangedAt?: Timestamp;
+  bio?: string;
+  socialLinks?: { platform: "instagram" | "tiktok" | "youtube"; url: string }[];
 }
 export interface Trivia {
   id: string;

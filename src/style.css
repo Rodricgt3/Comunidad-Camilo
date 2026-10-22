@@ -1638,3 +1638,17 @@ details[open] > summary::after {
   color: var(--lime);
   letter-spacing: 0.3px;
 }
+.past-pill { color: #d6d9c8; border-color: #72785b; }
+.status { color: #c5d856; font-size: 12px; letter-spacing: .08em; }
+.staff-profile-editor { display: grid; gap: 10px; width: 100%; margin-top: 14px; padding-top: 14px; border-top: 1px solid #c5d85633; }
+.staff-profile-editor label { display: grid; gap: 6px; color: #c5d856; font-size: 11px; letter-spacing: .08em; }
+.staff-profile-editor textarea, .staff-profile-editor input, .staff-profile-editor select { width: 100%; border: 1px solid #ffffff22; border-radius: 14px; background: #ffffff08; color: #f7f9ee; padding: 11px; font: inherit; }
+.staff-profile-editor textarea { min-height: 70px; resize: vertical; }
+.social-row { display: grid; grid-template-columns: 92px 1fr auto; gap: 6px; align-items: center; }
+.social-row .text-btn { font-size: 9px; }
+.staff-person > summary { list-style: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.staff-person > summary::-webkit-details-marker { display: none; }
+.staff-person > summary > div:nth-child(2) { flex: 1; }
+.staff-public-detail { margin: 10px 0 0 48px; padding: 10px 0 0; border-top: 1px solid #ffffff12; }
+.staff-public-detail p { margin: 0 0 9px; color: #d7ddc1; font-size: 12px; line-height: 1.5; }
+.staff-public-detail .staff-socials { display: flex; gap: 8px; }

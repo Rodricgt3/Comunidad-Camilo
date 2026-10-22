@@ -79,6 +79,20 @@ export async function updateDisplayName(uid: string, displayName: string) {
   if (name.length < 2 || name.length > 40) throw new Error("El usuario debe tener entre 2 y 40 caracteres.");
   await updateDoc(ref(`users/${uid}`), { displayName: name, displayNameChangedAt: serverTimestamp() });
 }
+export async function updateStaffProfile(uid: string, bio: string, socialLinks: Profile["socialLinks"]) {
+  const cleanBio = bio.trim().slice(0, 160);
+  const links = (socialLinks || []).slice(0, 5).filter((link) => /^(instagram|tiktok|youtube)$/.test(link.platform) && /^https:\/\/(www\.)?(instagram\.com|tiktok\.com|youtube\.com|youtu\.be)\//i.test(link.url));
+  await updateDoc(ref(`users/${uid}`), { bio: cleanBio, socialLinks: links });
+}
+export async function listEventsForUser(profile: Profile) {
+  const rows = await getDocs(query(collection(database(), "events"), orderBy("date", "asc"), limit(50)));
+  const events = rows.docs.map((d) => ({ ...d.data(), id: d.id }) as Meet);
+  const cutoff = Date.now() - 2 * 24 * 60 * 60 * 1000;
+  if (profile.role === "camilo_owner") {
+    await Promise.all(events.filter((event) => event.date.toMillis() < cutoff).map((event) => deleteMeet(event.id)));
+  }
+  return events.filter((event) => event.date.toMillis() >= cutoff);
+}
 export async function loadProfile(user: User): Promise<Profile> {
   const access = await read<{ role: Role }>(
     `access/${user.email?.toLowerCase()}`,
