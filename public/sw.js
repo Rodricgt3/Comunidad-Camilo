@@ -10,7 +10,9 @@ self.addEventListener("install", (event) =>
           SCOPE,
           SCOPE + "index.html",
           SCOPE + "manifest.json",
+          SCOPE + "icons/icon-144.png",
           SCOPE + "icons/icon-192.png",
+          SCOPE + "icons/apple-touch-icon.png",
           ...BUILD_ASSETS.map((path) => SCOPE + path),
         ]),
       )
