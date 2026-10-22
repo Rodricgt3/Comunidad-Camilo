@@ -1347,6 +1347,7 @@ details[open] > summary::after {
   align-items: flex-start;
   justify-content: center;
 }
+.pass-overlay { padding:0; align-items:stretch; }
 .modal {
   padding: 24px;
   width: 100%;
@@ -1371,6 +1372,11 @@ details[open] > summary::after {
   color: var(--muted);
   margin: 20px 0;
 }
+.pass-modal { max-width: min(680px, 100%); min-height: min(100dvh, 920px); max-height: 100dvh; margin: 0; border-radius: 0; padding: max(24px, env(safe-area-inset-top)) max(22px) max(30px, env(safe-area-inset-bottom)); display:flex; flex-direction:column; justify-content:center; }
+.pass-modal .boarding { width:min(100%, 520px); margin:0 auto; }
+.pass-modal .qr { padding:clamp(18px, 4vw, 34px); margin:28px auto; }
+.pass-modal .qr svg { width:min(72vw, 420px); height:auto; }
+@media (max-width: 480px) { .pass-modal { width:100%; } .pass-modal > header { position:absolute; top:max(16px, env(safe-area-inset-top)); left:20px; right:20px; } .pass-modal .boarding h2 { font-size:clamp(24px, 7vw, 34px); } }
 .toast {
   position: fixed;
   bottom: 110px;

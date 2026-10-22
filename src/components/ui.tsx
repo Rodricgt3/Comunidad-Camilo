@@ -103,7 +103,7 @@ export function Modal({
   }, []);
   return (
     <div
-      className="overlay"
+      className={`overlay ${title.toLowerCase().includes("pase") ? "pass-overlay" : ""}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
       }}
@@ -111,7 +111,7 @@ export function Modal({
       <div
         ref={box}
         tabIndex={-1}
-        className="modal glass"
+        className={`modal glass ${title.toLowerCase().includes("pase") ? "pass-modal" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}
