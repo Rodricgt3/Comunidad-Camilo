@@ -462,6 +462,7 @@ function TriviaCard({ trivia: t }: { trivia: Trivia }) {
         <Trophy size={17} />
         {t.prize}
       </div>
+      {!active && t.winnerName && <div className="trivia-winner-public"><Trophy size={16} /><span>GANADOR: <strong>{t.winnerName}</strong></span>{t.winnerAt && <time>{t.winnerAt.toDate().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" })}</time>}</div>}
       {state.error && <p className="error">{state.error}</p>}
       {state.data ? (
         <p className="success">Respuesta registrada. Espera los resultados.</p>
@@ -1007,6 +1008,7 @@ function ProfileView() {
   const board = useLoad(() => api.list<Profile>("users", "rpmPoints", 10), []);
   const orders = useLoad(() => api.myOrders(p!.id), [p!.id]);
   const staff = useLoad(() => api.listStaff(), []);
+  const currentRank = p!.rpmPoints >= 8000 ? "Ferrari / Lamborghini" : p!.rpmPoints >= 5000 ? "Porsche Club" : p!.rpmPoints >= 3000 ? "Tsuru Tuneado" : p!.rpmPoints >= 2000 ? "Tsuru" : p!.rpmPoints >= 1000 ? "Chevy Pop" : "Motor de Arranque";
   return (
     <>
       <Heading
@@ -1078,6 +1080,7 @@ function ProfileView() {
         <h2>Tus insignias</h2>
         <Trophy size={18} />
       </div>
+      <p className="current-rank">RANGO ACTUAL · <strong>{currentRank}</strong></p>
       <div className="badges badge-list">
         {["Motor de Arranque", "Chevy Pop", "Tsuru", "Tsuru Tuneado", "Jetta en el Tianguis", "Porsche Club", "Ferrari / Lamborghini"].map((b, index) => {
           const Icon = [Gauge, CarFront, Wrench, Zap, Trophy, Crown, Sparkles][index];
@@ -1135,7 +1138,6 @@ function ProfileView() {
           </p>
         ))}
       </details>
-      <Support />
       <Action
         className="btn"
         onClick={async () => {
@@ -1161,7 +1163,7 @@ function ProfileView() {
     </>
   );
 }
-function Support() {
+export function Support() {
   const { profile: p } = useSession();
   const [question, setQuestion] = useState("");
   const state = useLoad(
@@ -1416,7 +1418,6 @@ function Staff() {
         </>
       )}
       <OrderControl />
-      <Support />
       {scan && (
         <Modal title="Control de acceso" close={() => setScan(false)}>
           <Scanner />

@@ -32,7 +32,7 @@ service cloud.firestore {
   match /trivias/{id} {
    allow read: if signed();
    allow create: if staff() && request.resource.data.keys().hasOnly(['question','prize','status','expiresAt','createdAt']) && bounded(request.resource.data.question,500) && bounded(request.resource.data.prize,500) && request.resource.data.status == 'active' && request.resource.data.expiresAt > request.time && request.resource.data.expiresAt <= request.time + duration.value(25,'h') && request.resource.data.createdAt == request.time;
-   allow update: if staff() && changedOnly(['status']) && request.resource.data.status == 'closed';
+   allow update: if staff() && changedOnly(['status','winnerName','winnerAt']) && (!request.resource.data.keys().hasAny(['status']) || request.resource.data.status == 'closed') && (!request.resource.data.keys().hasAny(['winnerName']) || bounded(request.resource.data.winnerName,100)) && (!request.resource.data.keys().hasAny(['winnerAt']) || request.resource.data.winnerAt == request.time);
    allow delete: if owner();
    match /private/{secret} { allow read: if staff(); allow create: if staff() && secret == 'answer' && request.resource.data.keys().hasOnly(['answer']) && bounded(request.resource.data.answer,200); allow update,delete: if owner(); }
    match /submissions/{uid} {

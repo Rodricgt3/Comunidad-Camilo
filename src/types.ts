@@ -16,6 +16,8 @@ export interface Trivia {
   prize: string;
   status: "active" | "closed";
   expiresAt: Timestamp;
+  winnerName?: string;
+  winnerAt?: Timestamp;
 }
 export interface Submission {
   id: string;

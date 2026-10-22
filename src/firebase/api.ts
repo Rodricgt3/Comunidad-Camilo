@@ -163,12 +163,14 @@ export async function acceptTriviaAnswer(id: string, uid: string) {
 export async function awardTrivia(id: string, submission: Submission) {
   await runTransaction(database(), async (tx) => {
     const sr = ref(`trivias/${id}/submissions/${submission.uid}`),
-      ur = ref(`users/${submission.uid}`);
-    const [s, u] = await Promise.all([tx.get(sr), tx.get(ur)]);
+      ur = ref(`users/${submission.uid}`),
+      tr = ref(`trivias/${id}`);
+    const [s, u, t] = await Promise.all([tx.get(sr), tx.get(ur), tx.get(tr)]);
     if (s.data()?.awarded)
       throw new Error("Los RPM de esta respuesta ya fueron acreditados.");
     if (!u.exists()) throw new Error("Usuario inexistente.");
     tx.update(sr, { awarded: true });
+    if (!t.data()?.winnerName) tx.update(tr, { winnerName: submission.displayName, winnerAt: serverTimestamp() });
     tx.update(ur, {
       rpmPoints: u.data().rpmPoints + 1000,
       badges: [
