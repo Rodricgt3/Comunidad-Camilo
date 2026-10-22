@@ -514,6 +514,7 @@ function Events() {
 function EventCard({ meet: m }: { meet: Meet }) {
   const { profile } = useSession();
   const [show, setShow] = useState(false);
+  const [calendarPrompt, setCalendarPrompt] = useState(false);
   const state = useLoad(
     () => api.read<Registration>(`events/${m.id}/registrations/${profile!.id}`),
     [m.id],
@@ -568,17 +569,16 @@ function EventCard({ meet: m }: { meet: Meet }) {
               : "La comunidad se reúne."}
         </span>
       </div>
-      <div className="calendar-actions">
-        <button className="btn calendar-btn" onClick={() => openGoogleCalendar(m)}><CalendarPlus size={16} /> GOOGLE CALENDAR</button>
-        <button className="btn calendar-btn" onClick={() => downloadCalendarFile(m)}><CalendarDays size={16} /> APPLE / .ICS</button>
-      </div>
       {state.error && <p className="error">{state.error}</p>}
       {state.data ? (
         state.data.status === "confirmed" ? (
-          <button className="btn primary" onClick={() => setShow(true)}>
-            <QrCode size={18} /> VER MI PASE{" "}
-            {state.data.checkedIn && "· UTILIZADO"}
-          </button>
+          <>
+            <button className="btn primary" onClick={() => setShow(true)}>
+              <QrCode size={18} /> VER MI PASE{" "}
+              {state.data.checkedIn && "· UTILIZADO"}
+            </button>
+            {calendarPrompt && <div className="calendar-confirmation"><strong>Asistencia confirmada</strong><small>Agrega este Meet a tu calendario.</small><CalendarActions meet={m} onDone={() => setCalendarPrompt(false)} /></div>}
+          </>
         ) : (
           <p className="success">
             Estás en la lista del sorteo. Actualiza para consultar el resultado.
@@ -596,6 +596,7 @@ function EventCard({ meet: m }: { meet: Meet }) {
           onClick={async () => {
             await api.register(m, profile!);
             state.reload();
+            setCalendarPrompt(true);
           }}
         >
           QUIERO ESTAR AHÍ <ArrowUpRight size={18} />
@@ -624,11 +625,16 @@ function EventCard({ meet: m }: { meet: Meet }) {
                 : "CONFIRMADO · Muestra este QR en la entrada"}
             </p>
             <small>Este pase es personal. No compartas su captura.</small>
+            <CalendarActions meet={m} />
           </div>
         </Modal>
       )}
     </article>
   );
+}
+function CalendarActions({ meet, onDone }: { meet: Meet; onDone?: () => void }) {
+  const done = () => onDone?.();
+  return <div className="calendar-actions"><button className="btn calendar-btn" onClick={() => { openGoogleCalendar(meet); done(); }}><CalendarPlus size={16} /> GOOGLE CALENDAR</button><button className="btn calendar-btn" onClick={() => { downloadCalendarFile(meet); done(); }}><CalendarDays size={16} /> APPLE / .ICS</button></div>;
 }
 function calendarStamp(date: Date) {
   return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");

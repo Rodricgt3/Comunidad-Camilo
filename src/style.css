@@ -930,6 +930,10 @@ video {
 }
 .calendar-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
 .calendar-btn { display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; font-size:9px; white-space:nowrap; }
+.calendar-confirmation { margin-top:12px; padding:12px; border:1px solid rgba(197,216,86,.28); border-radius:16px; background:rgba(197,216,86,.06); }
+.calendar-confirmation strong,.calendar-confirmation small { display:block; }
+.calendar-confirmation strong { color:var(--lime); font-size:12px; }
+.calendar-confirmation small { margin-top:4px; color:var(--muted); font-size:10px; }
 @media (max-width:360px) { .calendar-actions { grid-template-columns:1fr; } }
 .boarding {
   text-align: center;
@@ -1489,6 +1493,7 @@ details[open] > summary::after {
   color: #b8c49e;
   margin-top: 10px;
 }
+@media (max-width:600px) { .install { left:12px; right:12px; bottom:calc(96px + env(safe-area-inset-bottom)); width:auto; max-width:none; transform:none; padding:16px; } .install p { max-width:100%; line-height:1.5; } }
 .scan-result {
   position: fixed;
   inset: 0;
