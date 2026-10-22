@@ -139,7 +139,6 @@ export async function submitAnswer(id: string, answer: string, p: Profile) {
     submittedAt: serverTimestamp(),
     awarded: false,
     delivered: false,
-    accepted: false,
   });
 }
 export async function winners(id: string) {
