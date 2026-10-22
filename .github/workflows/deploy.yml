@@ -1,4 +1,5 @@
 name: Deploy garage to GitHub Pages
+# Builds the Vite app and publishes dist/ through the Pages artifact.
 on:
   push:
     branches: [main]
