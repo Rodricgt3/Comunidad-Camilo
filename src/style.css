@@ -566,6 +566,16 @@ video {
   padding: 18px max(18px, 5.8vw) calc(128px + env(safe-area-inset-bottom));
   overflow-wrap: anywhere;
 }
+.page-transition { animation: page-enter .58s cubic-bezier(.22,1,.36,1) both; transform-origin: top center; }
+.fold-text { display:inline-flex; perspective:700px; }
+.fold-char { display:inline-block; transform-origin:top center; animation: fold-in .65s cubic-bezier(.22,1,.36,1) both; animation-delay:var(--fold-delay); will-change:transform,opacity; }
+.glass, .feature-banner, .quick-grid a, .section-title { animation: surface-in .55s cubic-bezier(.22,1,.36,1) both; }
+.glass:nth-child(2), .quick-grid a:nth-child(2) { animation-delay:.06s; }
+.glass:nth-child(3), .quick-grid a:nth-child(3) { animation-delay:.12s; }
+@keyframes page-enter { from { opacity:0; transform:translateY(18px) scale(.985); } to { opacity:1; transform:none; } }
+@keyframes fold-in { from { opacity:0; transform:rotateX(-92deg) translateY(-8px); } to { opacity:1; transform:rotateX(0) translateY(0); } }
+@keyframes surface-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) { .page-transition,.fold-char,.glass,.feature-banner,.quick-grid a,.section-title { animation:none !important; } }
 .greeting > .eyebrow {
   font-size: 8px;
 }

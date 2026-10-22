@@ -7,6 +7,7 @@ import {
   Link,
   NavLink,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -314,6 +315,7 @@ function Login({ error }: { error: string }) {
 }
 function Shell() {
   const { profile } = useSession();
+  const location = useLocation();
   return (
     <>
       <header className="topbar">
@@ -326,7 +328,7 @@ function Shell() {
           )}
         </Link>
       </header>
-      <main className="content">
+      <main className="content page-transition" key={location.pathname}>
         <Routes>
           <Route path="/garage" element={<Garage />} />
           <Route path="/events" element={<Events />} />

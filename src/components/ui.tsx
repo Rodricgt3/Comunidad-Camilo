@@ -1,6 +1,9 @@
 import React, { useEffect, useState, type ReactNode } from "react";
 import { Flag, X, RefreshCw } from "lucide-react";
 import { useSession } from "../session";
+export function FoldText({ text, className = "" }: { text: string; className?: string }) {
+  return <span className={`fold-text ${className}`} aria-label={text}>{Array.from(text).map((character, index) => <span className="fold-char" style={{ "--fold-delay": `${index * 0.035}s` } as React.CSSProperties} key={`${character}-${index}`}>{character === " " ? "\u00a0" : character}</span>)}</span>;
+}
 const errorText = (e: unknown) =>
   e instanceof Error ? e.message : "No se pudo completar la operación.";
 export function AsyncState({
@@ -152,7 +155,7 @@ export function Heading({
     <div className="page-heading">
       <div>
         <span className="eyebrow">{eyebrow}</span>
-        <h1>{title}</h1>
+        <h1><FoldText text={title} /></h1>
       </div>
       {reload && (
         <button className="icon" aria-label="Actualizar" onClick={reload}>
