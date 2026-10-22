@@ -1542,6 +1542,7 @@ function StaffTrivia({
   );
 }
 function StaffEvent({ meet: e, reload }: { meet: Meet; reload: () => void }) {
+  const { profile } = useSession();
   const [count, setCount] = useState(1);
   const [showRegistrations, setShowRegistrations] = useState(false);
   const registrations = useLoad(
@@ -1554,6 +1555,7 @@ function StaffEvent({ meet: e, reload }: { meet: Meet; reload: () => void }) {
       <p>
         {e.confirmedCount} confirmados · {e.mode}
       </p>
+      {profile?.role === "camilo_owner" && <Action className="btn danger" onClick={async () => { if (!window.confirm("¿Eliminar este Meet y todos sus registros?")) return; await api.deleteMeet(e.id); reload(); }}>ELIMINAR MEET</Action>}
       <button className="btn" onClick={() => setShowRegistrations((value) => !value)}>
         {showRegistrations ? "OCULTAR REGISTRADOS" : "VER PERSONAS REGISTRADAS"}
       </button>

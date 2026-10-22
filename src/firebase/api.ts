@@ -230,6 +230,16 @@ export async function eventRegistrations(eventId: string) {
     .map((d) => ({ ...d.data(), id: d.id }) as Registration)
     .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
 }
+export async function deleteMeet(eventId: string) {
+  const databaseRef = database();
+  const registrations = await getDocs(collection(databaseRef, `events/${eventId}/registrations`));
+  const refs = [...registrations.docs.map((row) => row.ref), ref(`events/${eventId}`)];
+  for (let start = 0; start < refs.length; start += 450) {
+    const batch = writeBatch(databaseRef);
+    refs.slice(start, start + 450).forEach((documentRef) => batch.delete(documentRef));
+    await batch.commit();
+  }
+}
 export async function listStaff() {
   const rows = await getDocs(
     query(collection(database(), "users"), where("role", "in", ["camilo_owner", "spotter_mod"]), limit(20)),
