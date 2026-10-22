@@ -1413,6 +1413,14 @@ function StaffTrivia({
 }) {
   const [results, setResults] = useState<Submission[] | null>(null);
   const [submissions, setSubmissions] = useState<Submission[] | null>(null);
+  const loadSubmissions = async () => {
+    const [all, top] = await Promise.all([
+      api.triviaSubmissions(t.id),
+      api.winners(t.id),
+    ]);
+    setSubmissions(all);
+    setResults(top);
+  };
   return (
     <div className="glass staff-card">
       <span className="eyebrow">{t.status.toUpperCase()}</span>
@@ -1431,20 +1439,18 @@ function StaffTrivia({
       )}
       <Action
         className="btn"
-        onClick={async () => setSubmissions(await api.triviaSubmissions(t.id))}
+        onClick={loadSubmissions}
       >
         <Trophy size={16} /> VER TODAS LAS RESPUESTAS
       </Action>
       {submissions?.length === 0 && <p>Esta trivia todavía no tiene respuestas.</p>}
       {submissions?.map((s) => <div className="submission-row" key={s.id}>
-        <div><strong>{s.displayName}</strong><small>{s.answer}</small></div>
-        <Action className="btn" disabled={s.accepted} onClick={async () => { await api.acceptTriviaAnswer(t.id, s.uid); setSubmissions(await api.triviaSubmissions(t.id)); }}>
+        <div><strong>{s.displayName}</strong><small>Respuesta: {s.answer}</small><time>{s.submittedAt?.toDate().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "medium" })}</time></div>
+        <Action className="btn" disabled={s.accepted} onClick={async () => { await api.acceptTriviaAnswer(t.id, s.uid); await loadSubmissions(); }}>
           {s.accepted ? "MARCADA CORRECTA" : "MARCAR CORRECTA"}
         </Action>
       </div>)}
-      <Action className="btn" onClick={async () => setResults(await api.winners(t.id))}>
-        <Trophy size={16} /> CONSULTAR TOP 3
-      </Action>
+      {results && <div className="trivia-top3"><h4><Trophy size={15} /> TOP 3 VERIFICADO</h4>{results.length === 0 ? <p>Sin respuestas correctas verificadas.</p> : results.map((s, i) => <div key={s.id}><strong>#{i + 1} {s.displayName}</strong><time>{s.submittedAt?.toDate().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "medium" })}</time></div>)}</div>}
       {results?.length === 0 && <p>Sin respuestas correctas registradas.</p>}
       {results?.map((s, i) => (
         <div key={s.id} className="winner">
