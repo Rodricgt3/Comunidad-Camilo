@@ -1500,7 +1500,7 @@ function StaffEvent({ meet: e, reload }: { meet: Meet; reload: () => void }) {
         {showRegistrations ? "OCULTAR REGISTRADOS" : "VER PERSONAS REGISTRADAS"}
       </button>
       {showRegistrations && <div className="registrations-list">
-        <AsyncState {...registrations} empty />
+        <AsyncState {...registrations} empty={!registrations.data?.length} />
         {registrations.data?.map((person, index) => <div className="registration-row" key={person.id}>
           <strong>{index + 1}. {person.displayName}</strong>
           <span className={`status-pill ${person.status}`}>{person.status === "confirmed" ? "CONFIRMADO" : "LISTA DE ESPERA"}</span>
