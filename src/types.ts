@@ -25,6 +25,7 @@ export interface Submission {
   submittedAt: Timestamp;
   awarded?: boolean;
   delivered?: boolean;
+  accepted?: boolean;
 }
 export interface Meet {
   id: string;

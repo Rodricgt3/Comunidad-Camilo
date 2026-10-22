@@ -32,6 +32,11 @@ import {
   ScanLine,
   MessageCircle,
   Plus,
+  CarFront,
+  Wrench,
+  Crown,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { auth, configured, WHATSAPP_NUMBER } from "./firebase/config";
@@ -176,14 +181,27 @@ function Welcome() {
   );
 }
 function WeatherHero() {
+  const [weather, setWeather] = useState({ temp: 36, max: 42, min: 28, label: "Consultando clima…", city: "CAMILO GARAGE" });
+  useEffect(() => {
+    const load = (latitude: number, longitude: number, city = "TU UBICACIÓN") => {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto`)
+        .then((response) => response.json())
+        .then((data) => {
+          const code = Number(data.current?.weather_code || 0);
+          const labels = code === 0 ? "Despejado" : code < 4 ? "Parcialmente nublado" : code < 70 ? "Nublado" : "Lluvia";
+          setWeather({ temp: Math.round(data.current.temperature_2m), max: Math.round(data.daily.temperature_2m_max[0]), min: Math.round(data.daily.temperature_2m_min[0]), label: labels, city });
+        }).catch(() => undefined);
+    };
+    load(19.4326, -99.1332, "CIUDAD DE MÉXICO");
+  }, []);
   const now = new Date();
   const day = now.toLocaleDateString("es-MX", { weekday: "short" }).replace(".", "").toUpperCase();
   const date = `${day} ${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const time = now.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
   return <div className="hero-weather card">
     <section className="info-section"><div className="background-design"><div className="circle"/><div className="circle"/><div className="circle"/></div>
-      <div className="left-side"><div className="weather"><span aria-hidden="true">☀</span><span>Sunny</span></div><div className="temperature">36°</div><div className="range">42° / 28°</div></div>
-      <div className="right-side"><div><div className="hour">{time}</div><div className="date">{date}</div></div><div className="city">CAMILO GARAGE</div></div>
+      <div className="left-side"><div className="weather"><span aria-hidden="true">☀</span><span>{weather.label}</span></div><div className="temperature">{weather.temp}°</div><div className="range">{weather.max}° / {weather.min}°</div></div>
+      <div className="right-side"><div><div className="hour">{time}</div><div className="date">{date}</div></div><div className="city">{weather.city}</div></div>
     </section><section className="days-section"><button><span className="day">LUN</span><span>☀</span></button><button><span className="day">MAR</span><span>☁</span></button><button><span className="day">MIÉ</span><span>☁</span></button><button><span className="day">JUE</span><span>☀</span></button></section></div>;
 }
 function Login({ error }: { error: string }) {
@@ -1022,18 +1040,11 @@ function ProfileView() {
         <h2>Tus insignias</h2>
         <Trophy size={18} />
       </div>
-      <div className="badges">
-        {[
-          "Fundador / Early Adopter",
-          "Primer Meet Check-In",
-          "Ganador de Trivia Flash",
-          "Coleccionista de Merch",
-        ].map((b) => (
-          <div key={b} className={p!.badges.includes(b) ? "unlocked" : ""}>
-            <ShieldCheck size={22} />
-            <span>{b}</span>
-          </div>
-        ))}
+      <div className="badges badge-list">
+        {["Motor de Arranque", "Chevy Pop", "Tsuru", "Tsuru Tuneado", "Jetta en el Tianguis", "Porsche Club", "Ferrari / Lamborghini"].map((b, index) => {
+          const Icon = [Gauge, CarFront, Wrench, Zap, Trophy, Crown, Sparkles][index];
+          return <details key={b} className={p!.badges.includes(b) ? "unlocked" : ""}><summary><Icon size={22} /><span>{b}</span><small>{p!.badges.includes(b) ? "DESBLOQUEADA" : "VER CONDICIÓN"}</small></summary><p>{["Primer encendido del club.", "Llegaste con estilo urbano.", "Participación constante.", "Ya traes el proyecto afinado.", "Veterano de rutas y meets.", "Nivel premium del garage.", "Redline VIP: prioridad en experiencias."][index]}</p></details>;
+        })}
       </div>
       <div className="section-title">
         <h2>Redline / Top 10</h2>
@@ -1399,6 +1410,7 @@ function StaffTrivia({
   reload: () => void;
 }) {
   const [results, setResults] = useState<Submission[] | null>(null);
+  const [submissions, setSubmissions] = useState<Submission[] | null>(null);
   return (
     <div className="glass staff-card">
       <span className="eyebrow">{t.status.toUpperCase()}</span>
@@ -1417,8 +1429,18 @@ function StaffTrivia({
       )}
       <Action
         className="btn"
-        onClick={async () => setResults(await api.winners(t.id))}
+        onClick={async () => setSubmissions(await api.triviaSubmissions(t.id))}
       >
+        <Trophy size={16} /> VER TODAS LAS RESPUESTAS
+      </Action>
+      {submissions?.length === 0 && <p>Esta trivia todavía no tiene respuestas.</p>}
+      {submissions?.map((s) => <div className="submission-row" key={s.id}>
+        <div><strong>{s.displayName}</strong><small>{s.answer}</small></div>
+        <Action className="btn" disabled={s.accepted} onClick={async () => { await api.acceptTriviaAnswer(t.id, s.uid); setSubmissions(await api.triviaSubmissions(t.id)); }}>
+          {s.accepted ? "MARCADA CORRECTA" : "MARCAR CORRECTA"}
+        </Action>
+      </div>)}
+      <Action className="btn" onClick={async () => setResults(await api.winners(t.id))}>
         <Trophy size={16} /> CONSULTAR TOP 3
       </Action>
       {results?.length === 0 && <p>Sin respuestas correctas registradas.</p>}
