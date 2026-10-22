@@ -249,7 +249,7 @@ function Login({ error }: { error: string }) {
         <h1>
           Dentro del
           <br />
-          <em>círculo.</em>
+          <em>circuito.</em>
         </h1>
         <p>
           Un solo acceso. Todo el club.
