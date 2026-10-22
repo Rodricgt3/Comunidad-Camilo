@@ -900,6 +900,9 @@ video {
   font-size: 10px;
   color: var(--muted);
 }
+.calendar-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+.calendar-btn { display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; font-size:9px; white-space:nowrap; }
+@media (max-width:360px) { .calendar-actions { grid-template-columns:1fr; } }
 .boarding {
   text-align: center;
   padding: 15px 0;

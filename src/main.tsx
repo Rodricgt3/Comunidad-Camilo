@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Home,
   CalendarDays,
+  CalendarPlus,
   ShoppingBag,
   UserRound,
   Gauge,
@@ -585,6 +586,10 @@ function EventCard({ meet: m }: { meet: Meet }) {
               : "La comunidad se reúne."}
         </span>
       </div>
+      <div className="calendar-actions">
+        <button className="btn calendar-btn" onClick={() => openGoogleCalendar(m)}><CalendarPlus size={16} /> GOOGLE CALENDAR</button>
+        <button className="btn calendar-btn" onClick={() => downloadCalendarFile(m)}><CalendarDays size={16} /> APPLE / .ICS</button>
+      </div>
       {state.error && <p className="error">{state.error}</p>}
       {state.data ? (
         state.data.status === "confirmed" ? (
@@ -642,6 +647,32 @@ function EventCard({ meet: m }: { meet: Meet }) {
       )}
     </article>
   );
+}
+function calendarStamp(date: Date) {
+  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+}
+function openGoogleCalendar(meet: Meet) {
+  const start = meet.date.toDate();
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  const url = new URL("https://calendar.google.com/calendar/render");
+  url.searchParams.set("action", "TEMPLATE");
+  url.searchParams.set("text", `Camilo Guerra Cars · ${meet.title}`);
+  url.searchParams.set("dates", `${calendarStamp(start)}/${calendarStamp(end)}`);
+  url.searchParams.set("details", meet.description);
+  url.searchParams.set("location", meet.location);
+  window.open(url.toString(), "_blank", "noopener,noreferrer");
+}
+function downloadCalendarFile(meet: Meet) {
+  const start = meet.date.toDate();
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  const escape = (value: string) => value.replace(/[\\;,]/g, (match) => `\\${match}`).replace(/\n/g, "\\n");
+  const content = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Camilo Guerra Cars//Club Oficial//ES", "BEGIN:VEVENT", `UID:${meet.id}@camilo-guerra-cars`, `DTSTAMP:${calendarStamp(new Date())}`, `DTSTART:${calendarStamp(start)}`, `DTEND:${calendarStamp(end)}`, `SUMMARY:${escape(`Camilo Guerra Cars · ${meet.title}`)}`, `LOCATION:${escape(meet.location)}`, `DESCRIPTION:${escape(meet.description)}`, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${meet.title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "camilo-meet"}.ics`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 function videoEmbed(url: string) {
   try {
