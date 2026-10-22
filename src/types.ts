@@ -9,6 +9,7 @@ export interface Profile {
   rpmPoints: number;
   badges: string[];
   socials?: { instagram?: string; youtube?: string; tiktok?: string };
+  displayNameChangedAt?: Timestamp;
 }
 export interface Trivia {
   id: string;

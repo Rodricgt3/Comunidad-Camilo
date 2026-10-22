@@ -74,6 +74,11 @@ export async function emailRegister(email: string, password: string) {
   return credential;
 }
 export const logout = () => auth && signOut(auth);
+export async function updateDisplayName(uid: string, displayName: string) {
+  const name = displayName.trim().replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 40) throw new Error("El usuario debe tener entre 2 y 40 caracteres.");
+  await updateDoc(ref(`users/${uid}`), { displayName: name, displayNameChangedAt: serverTimestamp() });
+}
 export async function loadProfile(user: User): Promise<Profile> {
   const access = await read<{ role: Role }>(
     `access/${user.email?.toLowerCase()}`,

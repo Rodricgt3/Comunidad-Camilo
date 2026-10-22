@@ -1005,6 +1005,8 @@ function Product({
 }
 function ProfileView() {
   const { profile: p, refresh, notify } = useSession();
+  const [editingName, setEditingName] = useState(false);
+  const [name, setName] = useState(p?.displayName || "");
   const board = useLoad(() => api.list<Profile>("users", "rpmPoints", 10), []);
   const orders = useLoad(() => api.myOrders(p!.id), [p!.id]);
   const staff = useLoad(() => api.listStaff(), []);
@@ -1029,7 +1031,8 @@ function ProfileView() {
             <UserRound />
           )}
         </div>
-        <h2>{p?.displayName}</h2>
+        {editingName ? <form className="name-editor" onSubmit={async (event) => { event.preventDefault(); try { await api.updateDisplayName(p!.id, name); await refresh(); setEditingName(false); notify("Usuario actualizado."); } catch (error) { notify(errorText(error)); } }}><input value={name} maxLength={40} onChange={(event) => setName(event.target.value)} aria-label="Nombre de usuario" /><button className="btn primary" type="submit">GUARDAR USUARIO</button><button className="text-btn" type="button" onClick={() => { setName(p?.displayName || ""); setEditingName(false); }}>CANCELAR</button></form> : <><h2>{p?.displayName}</h2><button className="text-btn" onClick={() => setEditingName(true)}>EDITAR USUARIO</button></>}
+        <small className="name-note">Puedes cambiarlo una vez cada 30 días.</small>
         <span className="pill">
           {p?.role === "spotter_mod"
             ? "SPOTTER STAFF"

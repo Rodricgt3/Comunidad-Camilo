@@ -1272,6 +1272,7 @@ details[open] > summary::after {
   font-size: 9px;
   color: var(--muted);
 }
+.name-editor { display:grid; gap:8px; margin:8px 0 4px; }.name-editor input { width:100%; border:1px solid rgba(197,216,86,.35); border-radius:999px; background:rgba(255,255,255,.06); color:#fff; padding:11px 14px; }.name-note { display:block; color:var(--muted); font-size:9px; margin:6px 0 12px; }
 .badges {
   display: grid;
   grid-template-columns: 1fr 1fr;
