@@ -608,6 +608,21 @@ video {
   color: #b5bd9a;
   font-weight: 400;
 }
+.greeting { position:relative; }
+.rocket { position:absolute; right:4px; top:78px; width:54px; height:78px; transform:rotate(45deg); display:block; }
+.rocket-body { position:absolute; left:11px; top:0; width:32px; height:48px; animation:rocket-bounce .5s ease-in-out infinite; }
+.rocket-body-shape { display:block; width:32px; height:48px; background:#e9edda; border:2px solid #c5d856; border-radius:55% 55% 42% 42%; box-sizing:border-box; }
+.rocket-body::before { content:""; position:absolute; left:9px; top:14px; width:10px; height:10px; border-radius:50%; background:#202a13; border:2px solid #d4e868; z-index:1; }
+.rocket-fin { position:absolute; top:31px; width:14px; height:21px; background:#c5d856; z-index:-1; }
+.rocket-fin-left { left:-7px; border-radius:75% 0 0 25%; }
+.rocket-fin-right { right:-7px; border-radius:0 75% 25% 0; }
+.rocket-flame { position:absolute; top:44px; left:25px; width:7px; height:30px; background:linear-gradient(#d4e868, transparent); border-radius:50%; animation:rocket-flame .2s ease-in-out infinite; }
+.rocket-star { position:absolute; width:7px; height:2px; background:#fff; border-radius:50%; animation:rocket-twinkle .8s ease-in-out infinite; }
+.rocket-star::after { content:""; position:absolute; left:2px; top:-2px; width:2px; height:6px; background:#fff; }
+.rocket-star-one { left:-4px; top:10px; }.rocket-star-two { right:-5px; top:38px; animation-delay:.25s; }.rocket-star-three { left:4px; top:64px; animation-delay:.45s; }
+@keyframes rocket-bounce { 50% { transform:translateY(-3px); } }
+@keyframes rocket-flame { 50% { height:24px; opacity:.65; } }
+@keyframes rocket-twinkle { 50% { transform:scale(1.35); opacity:.45; } }
 .greeting p {
   font-size: 11px;
   color: var(--muted);

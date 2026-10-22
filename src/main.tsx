@@ -390,7 +390,7 @@ function Garage() {
           Qué onda,
           <br />
           <em>{profile?.displayName.split(" ")[0]}.</em>
-          <span className="mini-arrow">↗</span>
+          <RocketAnimation />
         </h1>
         <p>La pasión se vive. Aquí empieza tu siguiente ruta.</p>
       </div>
@@ -454,6 +454,9 @@ function Garage() {
       </div>
     </>
   );
+}
+function RocketAnimation() {
+  return <span className="rocket" aria-hidden="true"><span className="rocket-body"><span className="rocket-body-shape" /><span className="rocket-fin rocket-fin-left" /><span className="rocket-fin rocket-fin-right" /><span className="rocket-window" /></span><span className="rocket-flame" /><span className="rocket-star rocket-star-one" /><span className="rocket-star rocket-star-two" /><span className="rocket-star rocket-star-three" /></span>;
 }
 function TriviaCard({ trivia: t }: { trivia: Trivia }) {
   const { profile, notify } = useSession();
