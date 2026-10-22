@@ -614,6 +614,10 @@ video {
   margin: 15px 0 24px;
   max-width: 270px;
 }
+.weather-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:24px 0 10px; }
+.weather-row .eyebrow { font-size:8px; }
+.weather-toggle { font-size:9px; }
+.greeting + .weather-row + .hero-weather { width:100%; max-width:none; height:190px; margin:0 0 22px; }
 .feature-banner {
   display: block;
   height: 260px;

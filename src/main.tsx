@@ -161,7 +161,7 @@ function Welcome() {
       <div className="hero-label">
         <span className="dot" /> PASIÓN SIN LIMITADOR
       </div>
-      <WeatherHero />
+      <img className="hero-car" src={HERO} alt="Auto deportivo del club Camilo Guerra Cars" />
       <div className="welcome-copy">
         <span className="eyebrow">EL GARAGE TIENE UN LUGAR PARA TI</span>
         <h1>
@@ -378,6 +378,7 @@ function Shell() {
 }
 function Garage() {
   const { profile } = useSession();
+  const [showWeather, setShowWeather] = useState(true);
   const state = useLoad(() => api.list<Trivia>("trivias", "createdAt", 5), []);
   return (
     <>
@@ -393,6 +394,13 @@ function Garage() {
         </h1>
         <p>La pasión se vive. Aquí empieza tu siguiente ruta.</p>
       </div>
+      <div className="weather-row">
+        <span className="eyebrow">CLIMA DEL GARAGE</span>
+        <button className="text-btn weather-toggle" onClick={() => setShowWeather((visible) => !visible)}>
+          {showWeather ? "OCULTAR CLIMA" : "MOSTRAR CLIMA"}
+        </button>
+      </div>
+      {showWeather && <WeatherHero />}
       <Link className="feature-banner" to="/events">
         <img src={HERO} alt="Deportivo Porsche del club" />
         <div>
