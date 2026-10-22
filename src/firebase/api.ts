@@ -160,6 +160,17 @@ export async function triviaSubmissions(id: string) {
 export async function acceptTriviaAnswer(id: string, uid: string) {
   await patch(`trivias/${id}/submissions/${uid}`, { accepted: true });
 }
+export async function deleteTrivia(id: string) {
+  const databaseRef = database();
+  const triviaRef = ref(`trivias/${id}`);
+  const submissions = await getDocs(collection(databaseRef, `trivias/${id}/submissions`));
+  const refs = [...submissions.docs.map((submission) => submission.ref), ref(`trivias/${id}/private/answer`), triviaRef];
+  for (let start = 0; start < refs.length; start += 450) {
+    const batch = writeBatch(databaseRef);
+    refs.slice(start, start + 450).forEach((documentRef) => batch.delete(documentRef));
+    await batch.commit();
+  }
+}
 export async function awardTrivia(id: string, submission: Submission) {
   await runTransaction(database(), async (tx) => {
     const sr = ref(`trivias/${id}/submissions/${submission.uid}`),

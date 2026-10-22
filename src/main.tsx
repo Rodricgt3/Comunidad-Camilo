@@ -1458,6 +1458,7 @@ function StaffTrivia({
   trivia: Trivia;
   reload: () => void;
 }) {
+  const { profile } = useSession();
   const [results, setResults] = useState<Submission[] | null>(null);
   const [submissions, setSubmissions] = useState<Submission[] | null>(null);
   const loadSubmissions = async () => {
@@ -1484,6 +1485,7 @@ function StaffTrivia({
           CERRAR TRIVIA AHORA
         </Action>
       )}
+      {profile?.role === "camilo_owner" && <Action className="btn danger" onClick={async () => { if (!window.confirm("¿Eliminar esta trivia y todas sus respuestas?")) return; await api.deleteTrivia(t.id); reload(); }}>ELIMINAR TRIVIA</Action>}
       <Action
         className="btn"
         onClick={loadSubmissions}
