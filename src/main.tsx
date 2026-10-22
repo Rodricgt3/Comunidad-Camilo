@@ -141,12 +141,8 @@ function Welcome() {
   return (
     <main className="welcome">
       <div className="brand">
-        <span className="brand-mark">
-          CG<span>↗</span>
-        </span>
-        <span>
-          CAMILO GUERRA <small>CARS · CLUB OFICIAL</small>
-        </span>
+        <img className="official-logo" src={`${import.meta.env.BASE_URL}branding/logo-camilo.png`} alt="Camilo Guerra Cars" />
+        <span>CAMILO GUERRA <small>CARS · CLUB OFICIAL</small></span>
       </div>
       <div className="hero-label">
         <span className="dot" /> PASIÓN SIN LIMITADOR
@@ -190,7 +186,7 @@ function Login({ error }: { error: string }) {
         ← VOLVER AL GARAGE
       </Link>
       <div className="login-center">
-        <Gauge size={52} className="accent" />
+        <img className="login-logo" src={`${import.meta.env.BASE_URL}branding/logo-camilo.png`} alt="Camilo Guerra Cars" />
         <span className="eyebrow">EL ACCESO A TU SIGUIENTE NIVEL</span>
         <h1>
           Dentro del
@@ -254,9 +250,7 @@ function Shell() {
   return (
     <>
       <header className="topbar">
-        <Link to="/garage" className="wordmark">
-          CG<span> / CLUB OFICIAL</span>
-        </Link>
+        <Link to="/garage" className="wordmark"><img src={`${import.meta.env.BASE_URL}branding/logo-camilo.png`} alt="Camilo Guerra Cars" /><span>/ CLUB OFICIAL</span></Link>
         <Link to="/profile" className="avatar" aria-label="Mi perfil">
           {profile?.photoURL ? (
             <img src={profile.photoURL} alt="" referrerPolicy="no-referrer" />

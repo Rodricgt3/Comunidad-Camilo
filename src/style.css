@@ -147,7 +147,7 @@ video {
 }
 .phone {
   max-width: 480px;
-  min-height: 100dvh;
+  min-height: 100svh;
   margin: auto;
   position: relative;
   background:
@@ -290,12 +290,12 @@ video {
   letter-spacing: 3px;
 }
 .welcome {
-  min-height: 100dvh;
+  min-height: 100svh;
   position: relative;
   background:
     radial-gradient(ellipse at 70% 54%, #c5d856ad, transparent 44%),
     linear-gradient(175deg, #070805 22%, #151a09 55%, #b9ce50 100%);
-  padding: 35px 28px 24px;
+  padding: max(28px, env(safe-area-inset-top)) max(20px, 5.8vw) max(24px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   isolation: isolate;
@@ -305,10 +305,11 @@ video {
   gap: 11px;
   align-items: center;
   z-index: 2;
-  font-size: 12px;
+  font-size: clamp(10px, 2.8vw, 12px);
   font-weight: 700;
   letter-spacing: 1.8px;
 }
+.official-logo { width: 48px; height: 48px; object-fit: contain; border-radius: 12px; flex: 0 0 auto; }
 .brand small {
   display: block;
   font-size: 7px;
@@ -336,18 +337,18 @@ video {
 }
 .hero-car {
   position: absolute;
-  top: 160px;
+  top: clamp(135px, 20svh, 190px);
   left: 4%;
   width: 130%;
   max-width: none;
-  height: 310px;
+  height: clamp(250px, 36svh, 350px);
   object-fit: cover;
   object-position: center;
   z-index: -1;
   mask-image: linear-gradient(transparent, #000 20%, #000 75%, transparent);
 }
 .welcome-copy {
-  padding-top: 300px;
+  padding-top: clamp(260px, 42svh, 360px);
   color: #0d1204;
 }
 .welcome-copy .eyebrow {
@@ -355,7 +356,7 @@ video {
   font-size: 8px;
 }
 .welcome h1 {
-  font-size: 55px;
+  font-size: clamp(40px, 12vw, 55px);
   letter-spacing: -3px;
   margin-top: 15px;
   line-height: 0.98;
@@ -401,14 +402,15 @@ video {
   letter-spacing: 1px;
 }
 .login {
-  min-height: 100dvh;
-  padding: 30px;
+  min-height: 100svh;
+  padding: max(26px, env(safe-area-inset-top)) max(20px, 6vw) max(24px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   background:
     radial-gradient(ellipse at 110% 58%, #bedb4a80, transparent 55%),
     radial-gradient(ellipse at 45% 84%, #60711850, transparent 60%), #070805;
 }
+.login-logo { width: 58px; height: 58px; object-fit: contain; border-radius: 14px; margin-bottom: 22px; }
 .back {
   font-size: 9px;
   letter-spacing: 1px;
@@ -485,9 +487,10 @@ video {
 .wordmark {
   font-family: "Space Grotesk";
   font-weight: 700;
-  font-size: 27px;
+  font-size: 0;
   letter-spacing: -2px;
 }
+.wordmark img { width: 42px; height: 42px; object-fit: contain; border-radius: 10px; vertical-align: middle; }
 .wordmark span {
   font-family: Inter;
   font-size: 8px;
@@ -512,7 +515,8 @@ video {
   width: 100%;
 }
 .content {
-  padding: 18px 24px 130px;
+  padding: 18px max(18px, 5.8vw) calc(128px + env(safe-area-inset-bottom));
+  overflow-wrap: anywhere;
 }
 .greeting > .eyebrow {
   font-size: 8px;
@@ -691,7 +695,7 @@ video {
 }
 .dock {
   position: fixed;
-  bottom: max(22px, env(safe-area-inset-bottom));
+  bottom: max(16px, env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -705,7 +709,8 @@ video {
   border: 1px solid #ffffff30;
   border-radius: 45px;
   box-shadow: 0 8px 40px #0009;
-  width: min(360px, calc(100% - 44px));
+  width: min(380px, calc(100% - 28px));
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
 .dock a {
   display: flex;
@@ -1435,6 +1440,11 @@ details[open] > summary::after {
   .qr {
     padding: 15px;
   }
+}
+@media (min-width: 390px) and (max-width: 480px) {
+  .welcome-copy { padding-top: clamp(300px, 43svh, 410px); }
+  .welcome h1 { font-size: clamp(44px, 11vw, 54px); }
+  .hero-car { height: clamp(280px, 38svh, 365px); }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
