@@ -300,6 +300,10 @@ video {
 .pl__arrows { transform-origin:80px 80px; animation:pl-arrows 1.8s linear infinite; }
 @keyframes pl-ring { from { transform:rotate(-45deg); stroke-dashoffset:414; } 50% { stroke-dashoffset:120; transform:rotate(135deg); } to { stroke-dashoffset:414; transform:rotate(315deg); } }
 @keyframes pl-arrows { from { transform:rotate(0); } to { transform:rotate(360deg); } }
+.loader-bars { display:flex; align-items:center; justify-content:center; flex-direction:row; height:100px; }
+.loader-slider { position:relative; overflow:hidden; width:14px; height:78px; margin:0 7px; border-radius:30px; background:#151b0d; border:1px solid rgba(197,216,86,.35); box-shadow:0 0 18px rgba(197,216,86,.12), inset 3px 3px 8px rgba(0,0,0,.5); }
+.loader-slider::before { content:""; position:absolute; top:0; left:0; width:14px; height:22px; border-radius:50%; background:#c5d856; box-shadow:0 390px 0 370px #8fa93d; animation:loader-bars-flow 2.5s ease-in-out infinite; animation-delay:calc(-.5s * var(--i)); }
+@keyframes loader-bars-flow { 0% { transform:translateY(100px); filter:hue-rotate(0deg); } 50% { transform:translateY(0); } 100% { transform:translateY(100px); filter:hue-rotate(45deg); } }
 .welcome {
   min-height: 100svh;
   position: relative;

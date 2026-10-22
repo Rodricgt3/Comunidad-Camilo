@@ -146,11 +146,7 @@ function App() {
   );
 }
 function LoadingSpinner() {
-  return <svg className="pl" viewBox="0 0 160 160" width="160" height="160" aria-label="Cargando">
-    <circle className="pl__ring-stroke" cx="80" cy="80" r="66" fill="none" stroke="#c5d856" strokeWidth="12" strokeDasharray="414 414" strokeLinecap="round" />
-    <circle className="pl__ring-stroke pl__ring-alt" cx="80" cy="80" r="48" fill="none" stroke="#d4e868" strokeWidth="7" strokeDasharray="302 302" strokeLinecap="round" />
-    <g className="pl__arrows"><path fill="#c5d856" d="M80 15l12 30H68z"/><path fill="#fff" d="M80 145l-12-30h24z"/></g>
-  </svg>;
+  return <div className="loader-bars" aria-label="Cargando">{Array.from({ length: 5 }, (_, i) => <span className="loader-slider" style={{ "--i": i } as React.CSSProperties} key={i} />)}</div>;
 }
 function Welcome() {
   return (
@@ -402,19 +398,6 @@ function Garage() {
         </h1>
         <p>La pasión se vive. Aquí empieza tu siguiente ruta.</p>
       </div>
-      <Link className="feature-banner" to="/events">
-        <div>
-          <span className="pill">THE INNER CIRCLE</span>
-          <h2>
-            La siguiente curva.
-            <br />
-            La misma familia.
-          </h2>
-          <span>
-            DESCUBRE LOS MEETS <ArrowUpRight size={16} />
-          </span>
-        </div>
-      </Link>
       <div className="section-title">
         <h2>
           <Flame size={18} /> Dinámicas flash
