@@ -141,15 +141,16 @@ export async function submitAnswer(id: string, answer: string, p: Profile) {
 }
 export async function winners(id: string) {
   const secret = await read<{ answer: string }>(`trivias/${id}/private/answer`);
+  // Filtramos en Firestore y ordenamos en cliente para evitar un índice
+  // compuesto obligatorio en el plan Spark de Firebase.
   const q = query(
     collection(database(), `trivias/${id}/submissions`),
     where("answer", "==", secret?.answer || ""),
-    orderBy("submittedAt", "asc"),
-    limit(3),
   );
-  return (await getDocs(q)).docs.map(
-    (d) => ({ ...d.data(), id: d.id }) as Submission,
-  );
+  return (await getDocs(q)).docs
+    .map((d) => ({ ...d.data(), id: d.id }) as Submission)
+    .sort((a, b) => (a.submittedAt?.toMillis?.() || 0) - (b.submittedAt?.toMillis?.() || 0))
+    .slice(0, 3);
 }
 export async function awardTrivia(id: string, submission: Submission) {
   await runTransaction(database(), async (tx) => {
