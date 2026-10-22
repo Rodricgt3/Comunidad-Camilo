@@ -4,6 +4,10 @@ import { useSession } from "../session";
 export function FoldText({ text, className = "" }: { text: string; className?: string }) {
   return <span className={`fold-text ${className}`} aria-label={text}>{Array.from(text).map((character, index) => <span className="fold-char" style={{ "--fold-delay": `${index * 0.035}s` } as React.CSSProperties} key={`${character}-${index}`}>{character === " " ? "\u00a0" : character}</span>)}</span>;
 }
+export function SyncButton({ onClick, label = "ACTUALIZAR" }: { onClick: () => void | Promise<void>; label?: string }) {
+  const [busy, setBusy] = useState(false);
+  return <button className="text-btn sync-button" disabled={busy} onClick={async () => { setBusy(true); try { await onClick(); } finally { setBusy(false); } }}><RefreshCw size={13} className={busy ? "sync-spin" : ""} />{busy ? "SINCRONIZANDO…" : label}</button>;
+}
 const errorText = (e: unknown) =>
   e instanceof Error ? e.message : "No se pudo completar la operación.";
 export function AsyncState({

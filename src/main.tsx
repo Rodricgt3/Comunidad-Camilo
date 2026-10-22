@@ -61,7 +61,7 @@ import {
 import "./style.css";
 import { Session, useSession } from "./session";
 import { useLoad } from "./useLoad";
-import { AsyncState, Action, Modal, Timer, Heading } from "./components/ui";
+import { AsyncState, Action, Modal, Timer, Heading, SyncButton } from "./components/ui";
 const HERO =
   "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=85";
 const errorText = (e: unknown) =>
@@ -411,9 +411,7 @@ function Garage() {
         <h2>
           <Flame size={18} /> Dinámicas flash
         </h2>
-        <button className="text-btn" onClick={state.reload}>
-          ACTUALIZAR
-        </button>
+        <SyncButton onClick={state.reload} />
       </div>
       <AsyncState {...state} empty={!state.data?.length} />
       {state.data?.map((t) => (
@@ -1349,9 +1347,7 @@ function Staff() {
       </div>
       <div className="section-title">
         <h2>Trivias / Control en vivo</h2>
-        <button className="text-btn" onClick={ts.reload}>
-          ACTUALIZAR
-        </button>
+        <SyncButton onClick={ts.reload} />
       </div>
       <AsyncState {...ts} />
       {ts.data?.map((t) => (
@@ -1361,9 +1357,7 @@ function Staff() {
         <>
           <div className="section-title">
             <h2>Meets / Sorteos</h2>
-            <button className="text-btn" onClick={es.reload}>
-              ACTUALIZAR
-            </button>
+            <SyncButton onClick={es.reload} />
           </div>
           <AsyncState {...es} />
           {es.data?.map((e) => (
@@ -1915,9 +1909,7 @@ function OrderControl() {
   return (
     <details className="glass support">
       <summary>Órdenes / Pagos y entregas</summary>
-      <button className="text-btn" onClick={state.reload}>
-        ACTUALIZAR
-      </button>
+      <SyncButton onClick={state.reload} />
       <AsyncState {...state} empty={!state.data?.length} />
       {state.data?.map((o) => (
         <div className="comment" key={o.id}>

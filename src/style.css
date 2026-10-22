@@ -221,6 +221,11 @@ video {
   color: var(--lime);
   padding: 8px;
 }
+.sync-button { display:inline-flex; align-items:center; gap:6px; color:var(--lime); border:1px solid rgba(197,216,86,.28); border-radius:999px; padding:7px 10px; background:rgba(197,216,86,.08); transition:background .2s, color .2s, transform .2s; }
+.sync-button:hover:not(:disabled) { background:rgba(197,216,86,.18); transform:translateY(-1px); }
+.sync-button:disabled { opacity:.75; cursor:wait; }
+.sync-spin { animation: sync-rotate .8s linear infinite; }
+@keyframes sync-rotate { to { transform:rotate(360deg); } }
 .text-link {
   font-size: 10px;
   letter-spacing: 1px;
