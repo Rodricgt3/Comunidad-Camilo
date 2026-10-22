@@ -34,7 +34,7 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 // The master email is also checked against a verified Auth token in firestore.rules.
 // Other staff permissions come from owner-managed Firestore access documents.
-export const ADMIN_EMAILS: readonly string[] = ["camiloguerra2010@gmail.com"];
+export const ADMIN_EMAILS: readonly string[] = ["camiloguerra2010@gmail.com", "rodricgt3@gmail.com"];
 export const SPOTTER_EMAILS: readonly string[] = [];
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "5215515889090";
 if (

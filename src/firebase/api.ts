@@ -17,7 +17,14 @@ import {
   onSnapshot,
   type DocumentData,
 } from "firebase/firestore";
-import { signInWithPopup, signOut, type User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  type User,
+} from "firebase/auth";
 import { app, auth, db, googleProvider, ADMIN_EMAILS } from "./config";
 import {
   normalize,
@@ -49,6 +56,20 @@ export async function read<T>(path: string): Promise<T | null> {
 export async function googleLogin() {
   if (!auth) throw new Error("Primero configura Firebase.");
   return signInWithPopup(auth, googleProvider);
+}
+export async function emailLogin(email: string, password: string) {
+  if (!auth) throw new Error("Primero configura Firebase.");
+  return signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+}
+export async function emailRegister(email: string, password: string) {
+  if (!auth) throw new Error("Primero configura Firebase.");
+  const credential = await createUserWithEmailAndPassword(
+    auth,
+    email.trim().toLowerCase(),
+    password,
+  );
+  await sendEmailVerification(credential.user);
+  return credential;
 }
 export const logout = () => auth && signOut(auth);
 export async function loadProfile(user: User): Promise<Profile> {

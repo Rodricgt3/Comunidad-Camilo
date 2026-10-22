@@ -180,6 +180,33 @@ function Welcome() {
   );
 }
 function Login({ error }: { error: string }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [registering, setRegistering] = useState(false);
+  const [formError, setFormError] = useState("");
+  const submitEmail = async (event: FormEvent) => {
+    event.preventDefault();
+    setFormError("");
+    try {
+      if (registering) {
+        await api.emailRegister(email, password);
+        setFormError("Cuenta creada. Revisa tu correo y confirma la dirección antes de entrar.");
+        return;
+      }
+      await api.emailLogin(email, password);
+    } catch (e) {
+      const code = (e as { code?: string }).code;
+      setFormError(
+        code === "auth/invalid-credential" || code === "auth/wrong-password"
+          ? "Correo o contraseña incorrectos."
+          : code === "auth/email-already-in-use"
+            ? "Ese correo ya tiene una cuenta. Inicia sesión."
+            : code === "auth/weak-password"
+              ? "La contraseña debe tener al menos 6 caracteres."
+              : errorText(e),
+      );
+    }
+  };
   return (
     <main className="login">
       <Link to="/" className="back">
@@ -200,7 +227,7 @@ function Login({ error }: { error: string }) {
         </p>
         <div className="glass login-box">
           <h2>Verifica tu acceso</h2>
-          <p>Continúa con tu cuenta de Google.</p>
+          <p>Entra con Google o con correo y contraseña.</p>
           <Action
             className="google"
             disabled={!configured}
@@ -226,6 +253,21 @@ function Login({ error }: { error: string }) {
             </svg>{" "}
             CONTINUAR CON GOOGLE
           </Action>
+          <div className="login-divider"><span>O CORREO</span></div>
+          <form className="email-login" onSubmit={submitEmail}>
+            <label>
+              Correo
+              <input required type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" />
+            </label>
+            <label>
+              Contraseña
+              <input required minLength={6} type="password" autoComplete={registering ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
+            </label>
+            <button type="submit" className="email-submit">{registering ? "CREAR CUENTA" : "INICIAR SESIÓN"}</button>
+          </form>
+          <button type="button" className="link-button" onClick={() => { setRegistering((value) => !value); setFormError(""); }}>
+            {registering ? "Ya tengo una cuenta" : "Crear cuenta con correo"}
+          </button>
         </div>
         {!configured && (
           <p className="setup">
@@ -233,7 +275,7 @@ function Login({ error }: { error: string }) {
             <code>.env.local</code> y habilita Google Sign-In.
           </p>
         )}
-        {error && <p className="error">{error}</p>}
+        {(error || formError) && <p className="error">{formError || error}</p>}
         <small>
           Al entrar se guarda tu nombre, correo y actividad del club. Puedes
           solicitar la eliminación desde soporte.
