@@ -147,11 +147,7 @@ function Welcome() {
       <div className="hero-label">
         <span className="dot" /> PASIÓN SIN LIMITADOR
       </div>
-      <img
-        className="hero-car"
-        src={HERO}
-        alt="Porsche deportivo plateado en carretera"
-      />
+      <WeatherHero />
       <div className="welcome-copy">
         <span className="eyebrow">EL GARAGE TIENE UN LUGAR PARA TI</span>
         <h1>
@@ -178,6 +174,17 @@ function Welcome() {
       </div>
     </main>
   );
+}
+function WeatherHero() {
+  const now = new Date();
+  const day = now.toLocaleDateString("es-MX", { weekday: "short" }).replace(".", "").toUpperCase();
+  const date = `${day} ${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const time = now.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return <div className="hero-weather card">
+    <section className="info-section"><div className="background-design"><div className="circle"/><div className="circle"/><div className="circle"/></div>
+      <div className="left-side"><div className="weather"><span aria-hidden="true">☀</span><span>Sunny</span></div><div className="temperature">36°</div><div className="range">42° / 28°</div></div>
+      <div className="right-side"><div><div className="hour">{time}</div><div className="date">{date}</div></div><div className="city">CAMILO GARAGE</div></div>
+    </section><section className="days-section"><button><span className="day">LUN</span><span>☀</span></button><button><span className="day">MAR</span><span>☁</span></button><button><span className="day">MIÉ</span><span>☁</span></button><button><span className="day">JUE</span><span>☀</span></button></section></div>;
 }
 function Login({ error }: { error: string }) {
   const [email, setEmail] = useState("");
@@ -943,6 +950,7 @@ function ProfileView() {
   const { profile: p, refresh, notify } = useSession();
   const board = useLoad(() => api.list<Profile>("users", "rpmPoints", 10), []);
   const orders = useLoad(() => api.myOrders(p!.id), [p!.id]);
+  const staff = useLoad(() => api.listStaff(), []);
   return (
     <>
       <Heading
@@ -952,6 +960,7 @@ function ProfileView() {
           refresh().catch((e) => notify(errorText(e)));
           board.reload();
           orders.reload();
+          staff.reload();
         }}
       />
       <div className="profile-card glass">
@@ -1041,6 +1050,26 @@ function ProfileView() {
             <span>
               {u.rpmPoints.toLocaleString()} <small>RPM</small>
             </span>
+          </div>
+        ))}
+      </div>
+      <div className="section-title">
+        <h2>Equipo del club</h2>
+        <ShieldCheck size={18} />
+      </div>
+      <AsyncState {...staff} />
+      <div className="glass staff-directory">
+        {staff.data?.map((member) => (
+          <div className="staff-person" key={member.id}>
+            <div className="profile-avatar small">
+              {member.photoURL ? <img src={member.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserRound />}
+            </div>
+            <div><strong>{member.displayName}</strong><span>{member.role === "camilo_owner" ? "CAMILO / OWNER" : "SPOTTER STAFF"}</span></div>
+            <div className="staff-socials">
+              {member.socials?.instagram && <a href={safeUrl(member.socials.instagram)} target="_blank" rel="noreferrer" aria-label={`Instagram de ${member.displayName}`}>IG</a>}
+              {member.socials?.youtube && <a href={safeUrl(member.socials.youtube)} target="_blank" rel="noreferrer" aria-label={`YouTube de ${member.displayName}`}>YT</a>}
+              {member.socials?.tiktok && <a href={safeUrl(member.socials.tiktok)} target="_blank" rel="noreferrer" aria-label={`TikTok de ${member.displayName}`}>TK</a>}
+            </div>
           </div>
         ))}
       </div>
@@ -1432,12 +1461,28 @@ function StaffTrivia({
 }
 function StaffEvent({ meet: e, reload }: { meet: Meet; reload: () => void }) {
   const [count, setCount] = useState(1);
+  const [showRegistrations, setShowRegistrations] = useState(false);
+  const registrations = useLoad(
+    () => (showRegistrations ? api.eventRegistrations(e.id) : Promise.resolve([] as Registration[])),
+    [showRegistrations, e.id],
+  );
   return (
     <div className="glass staff-card">
       <h3>{e.title}</h3>
       <p>
         {e.confirmedCount} confirmados · {e.mode}
       </p>
+      <button className="btn" onClick={() => setShowRegistrations((value) => !value)}>
+        {showRegistrations ? "OCULTAR REGISTRADOS" : "VER PERSONAS REGISTRADAS"}
+      </button>
+      {showRegistrations && <div className="registrations-list">
+        <AsyncState {...registrations} empty />
+        {registrations.data?.map((person, index) => <div className="registration-row" key={person.id}>
+          <strong>{index + 1}. {person.displayName}</strong>
+          <span className={`status-pill ${person.status}`}>{person.status === "confirmed" ? "CONFIRMADO" : "LISTA DE ESPERA"}</span>
+          {person.checkedIn && <small>✓ Check-in realizado</small>}
+        </div>)}
+      </div>}
       {e.mode === "raffle" && !e.raffleDrawn && (
         <>
           <label>

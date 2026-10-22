@@ -31,6 +31,7 @@ import {
   type Profile,
   type Role,
   type Meet,
+  type Registration,
   type Item,
   type Submission,
 } from "../types";
@@ -195,6 +196,20 @@ export async function register(meet: Meet, p: Profile) {
     if (status === "confirmed")
       tx.update(er, { confirmedCount: data.confirmedCount + 1 });
   });
+}
+export async function eventRegistrations(eventId: string) {
+  const rows = await getDocs(
+    query(collection(database(), `events/${eventId}/registrations`), limit(500)),
+  );
+  return rows.docs
+    .map((d) => ({ ...d.data(), id: d.id }) as Registration)
+    .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
+}
+export async function listStaff() {
+  const rows = await getDocs(
+    query(collection(database(), "users"), where("role", "in", ["camilo_owner", "spotter_mod"]), limit(20)),
+  );
+  return rows.docs.map((d) => ({ ...d.data(), id: d.id })) as Profile[];
 }
 function randomIndex(max: number) {
   const bound = Math.floor(4294967296 / max) * max;

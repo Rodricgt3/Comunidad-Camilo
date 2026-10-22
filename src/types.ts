@@ -8,6 +8,7 @@ export interface Profile {
   role: Role;
   rpmPoints: number;
   badges: string[];
+  socials?: { instagram?: string; youtube?: string; tiktok?: string };
 }
 export interface Trivia {
   id: string;
