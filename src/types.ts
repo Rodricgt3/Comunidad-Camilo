@@ -80,6 +80,7 @@ export interface Ticket {
   question: string;
   answer: string;
   status: "open" | "resolved";
+  resolvedAt?: Timestamp;
 }
 export const normalize = (s: string) =>
   s

@@ -85,8 +85,8 @@ service cloud.firestore {
   match /supportTickets/{id} {
    allow read: if staff() || self(resource.data.uid);
    allow create: if signed() && request.resource.data.keys().hasOnly(['uid','displayName','question','answer','status','createdAt']) && self(request.resource.data.uid) && bounded(request.resource.data.displayName,100) && bounded(request.resource.data.question,1000) && request.resource.data.answer == '' && request.resource.data.status == 'open' && request.resource.data.createdAt == request.time;
-   allow update: if staff() && changedOnly(['answer','status']) && bounded(request.resource.data.answer,1000) && request.resource.data.status == 'resolved';
-   allow delete: if owner();
+   allow update: if staff() && changedOnly(['answer','status','resolvedAt']) && bounded(request.resource.data.answer,1000) && request.resource.data.status == 'resolved' && request.resource.data.resolvedAt == request.time;
+   allow delete: if owner() || (staff() && resource.data.status == 'resolved' && resource.data.resolvedAt < request.time - duration.value(3,'d'));
   }
  }
 }

@@ -40,6 +40,7 @@ import {
   Zap,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { serverTimestamp } from "firebase/firestore";
 import { auth, configured, WHATSAPP_NUMBER } from "./firebase/config";
 import * as api from "./firebase/api";
 import {
@@ -104,7 +105,7 @@ function App() {
         <div className="phone">
           {loading ? (
             <div className="splash">
-              <Gauge size={44} />
+              <LoadingSpinner />
               <p>ABRIENDO EL GARAGE</p>
             </div>
           ) : (
@@ -142,6 +143,13 @@ function App() {
       </HashRouter>
     </Session.Provider>
   );
+}
+function LoadingSpinner() {
+  return <svg className="pl" viewBox="0 0 160 160" width="160" height="160" aria-label="Cargando">
+    <circle className="pl__ring-stroke" cx="80" cy="80" r="66" fill="none" stroke="#c5d856" strokeWidth="12" strokeDasharray="414 414" strokeLinecap="round" />
+    <circle className="pl__ring-stroke pl__ring-alt" cx="80" cy="80" r="48" fill="none" stroke="#d4e868" strokeWidth="7" strokeDasharray="302 302" strokeLinecap="round" />
+    <g className="pl__arrows"><path fill="#c5d856" d="M80 15l12 30H68z"/><path fill="#fff" d="M80 145l-12-30h24z"/></g>
+  </svg>;
 }
 function Welcome() {
   return (
@@ -1045,7 +1053,7 @@ function ProfileView() {
       <div className="badges badge-list">
         {["Motor de Arranque", "Chevy Pop", "Tsuru", "Tsuru Tuneado", "Jetta en el Tianguis", "Porsche Club", "Ferrari / Lamborghini"].map((b, index) => {
           const Icon = [Gauge, CarFront, Wrench, Zap, Trophy, Crown, Sparkles][index];
-          return <details key={b} className={p!.badges.includes(b) ? "unlocked" : ""}><summary><Icon size={22} /><span>{b}</span><small>{p!.badges.includes(b) ? "DESBLOQUEADA" : "VER CONDICIÓN"}</small></summary><p>{["Primer encendido del club.", "Llegaste con estilo urbano.", "Participación constante.", "Ya traes el proyecto afinado.", "Veterano de rutas y meets.", "Nivel premium del garage.", "Redline VIP: prioridad en experiencias."][index]}</p></details>;
+          return <details key={b} className={p!.badges.includes(b) ? "unlocked" : ""}><summary><Icon size={22} /><span>{b}</span><small>{["0–999 RPM", "1,000–1,999 RPM", "2,000–2,999 RPM", "3,000–4,999 RPM", "5,000–6,999 RPM", "7,000–7,999 RPM", "8,000+ RPM"][index]}</small></summary><p>{["Primer encendido del club.", "Llegaste con estilo urbano.", "Participación constante.", "Ya traes el proyecto afinado.", "Veterano de rutas y meets.", "Nivel premium del garage.", "Redline VIP: prioridad en experiencias."][index]}</p></details>;
         })}
       </div>
       <div className="section-title">
@@ -1198,11 +1206,25 @@ function TicketAnswer({ id, reload }: { id: string; reload: () => void }) {
           await api.patch(`supportTickets/${id}`, {
             answer: answer.trim(),
             status: "resolved",
+            resolvedAt: serverTimestamp(),
           });
           reload();
         }}
       >
         RESPONDER Y RESOLVER
+      </Action>
+      <Action
+        className="btn danger"
+        onClick={async () => {
+          await api.patch(`supportTickets/${id}`, {
+            answer: answer.trim(),
+            status: "resolved",
+            resolvedAt: serverTimestamp(),
+          });
+          reload();
+        }}
+      >
+        CERRAR TICKET SIN RESPONDER
       </Action>
     </>
   );

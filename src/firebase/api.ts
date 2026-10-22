@@ -34,6 +34,7 @@ import {
   type Registration,
   type Item,
   type Submission,
+  type Ticket,
 } from "../types";
 const database = () => {
   if (!db) throw new Error("Configura Firebase para conectar el garage.");
@@ -381,7 +382,14 @@ export async function tickets(p: Profile) {
           orderBy("createdAt", "desc"),
           limit(30),
         );
-  return (await getDocs(q)).docs.map((d) => ({ ...d.data(), id: d.id }));
+  const rows = (await getDocs(q)).docs.map((d) => ({ ...d.data(), id: d.id })) as Ticket[];
+  if (p.role !== "member") {
+    const cutoff = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    const expired = (t: Ticket) => t.status === "resolved" && !!t.resolvedAt && t.resolvedAt.toMillis() < cutoff;
+    await Promise.all(rows.filter(expired).map((t) => remove(`supportTickets/${t.id}`)));
+    return rows.filter((t) => !expired(t));
+  }
+  return rows;
 }
 export async function setAccess(email: string, role: Role | "remove") {
   const address = email.trim().toLowerCase();

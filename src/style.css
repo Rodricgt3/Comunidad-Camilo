@@ -289,6 +289,12 @@ video {
   font-size: 10px;
   letter-spacing: 3px;
 }
+.pl { display:block; width:120px; height:120px; filter:drop-shadow(0 0 14px rgba(197,216,86,.35)); }
+.pl__ring-stroke { transform-origin:80px 80px; animation:pl-ring 2s linear infinite; }
+.pl__ring-alt { animation-duration:1.4s; animation-direction:reverse; opacity:.75; }
+.pl__arrows { transform-origin:80px 80px; animation:pl-arrows 1.8s linear infinite; }
+@keyframes pl-ring { from { transform:rotate(-45deg); stroke-dashoffset:414; } 50% { stroke-dashoffset:120; transform:rotate(135deg); } to { stroke-dashoffset:414; transform:rotate(315deg); } }
+@keyframes pl-arrows { from { transform:rotate(0); } to { transform:rotate(360deg); } }
 .welcome {
   min-height: 100svh;
   position: relative;
