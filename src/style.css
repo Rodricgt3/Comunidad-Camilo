@@ -640,6 +640,7 @@ video {
   border-radius: 26px;
   overflow: hidden;
   border: 1px solid #d5e89633;
+  background: radial-gradient(circle at 78% 28%, rgba(197,216,86,.32), transparent 32%), linear-gradient(145deg, #242c16, #0a0c08 68%);
 }
 .feature-banner > img {
   width: 100%;

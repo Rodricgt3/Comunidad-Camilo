@@ -383,6 +383,13 @@ function Garage() {
   const state = useLoad(() => api.list<Trivia>("trivias", "createdAt", 5), []);
   return (
     <>
+      <div className="weather-row">
+        <span className="eyebrow">CLIMA DEL GARAGE</span>
+        <button className="text-btn weather-toggle" onClick={() => setShowWeather((visible) => !visible)}>
+          {showWeather ? "OCULTAR CLIMA" : "MOSTRAR CLIMA"}
+        </button>
+      </div>
+      {showWeather && <WeatherHero />}
       <div className="greeting">
         <span className="eyebrow">
           <span className="dot" /> EL GARAGE ESTÁ ABIERTO
@@ -395,15 +402,7 @@ function Garage() {
         </h1>
         <p>La pasión se vive. Aquí empieza tu siguiente ruta.</p>
       </div>
-      <div className="weather-row">
-        <span className="eyebrow">CLIMA DEL GARAGE</span>
-        <button className="text-btn weather-toggle" onClick={() => setShowWeather((visible) => !visible)}>
-          {showWeather ? "OCULTAR CLIMA" : "MOSTRAR CLIMA"}
-        </button>
-      </div>
-      {showWeather && <WeatherHero />}
       <Link className="feature-banner" to="/events">
-        <img src={HERO} alt="Deportivo Porsche del club" />
         <div>
           <span className="pill">THE INNER CIRCLE</span>
           <h2>
