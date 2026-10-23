@@ -101,7 +101,12 @@ export async function loadProfile(user: User): Promise<Profile> {
   const role = ADMIN_EMAILS.includes(user.email?.toLowerCase() || "") && user.emailVerified
     ? "camilo_owner" : access?.role ?? "member";
   const existing = await read<Profile>(`users/${user.uid}`);
-  if (existing) return { ...existing, role, email: user.email || "" };
+  if (existing) {
+    if (role === "camilo_owner" && existing.role !== role) {
+      await updateDoc(ref(`users/${user.uid}`), { role, email: user.email || "" });
+    }
+    return { ...existing, role, email: user.email || existing.email || "" };
+  }
   const profile = {
     displayName: user.displayName || "Piloto",
     photoURL: user.photoURL || "",
@@ -109,6 +114,7 @@ export async function loadProfile(user: User): Promise<Profile> {
     rpmPoints: 0,
     badges: ["Fundador / Early Adopter"],
     createdAt: serverTimestamp(),
+    email: user.email || "",
   };
   await setDoc(ref(`users/${user.uid}`), profile);
   return { ...profile, email: user.email || "", id: user.uid };
@@ -256,10 +262,11 @@ export async function deleteMeet(eventId: string) {
   }
 }
 export async function listStaff() {
-  const rows = await getDocs(
-    query(collection(database(), "users"), where("role", "in", ["camilo_owner", "spotter_mod"]), limit(20)),
-  );
-  return rows.docs.map((d) => ({ ...d.data(), id: d.id })) as Profile[];
+  const rows = await getDocs(query(collection(database(), "users"), limit(100)));
+  const staff = rows.docs.map((d) => ({ ...d.data(), id: d.id }) as Profile).filter((member) => member.role === "camilo_owner" || member.role === "spotter_mod" || ADMIN_EMAILS.includes((member.email || "").toLowerCase()));
+  const known = new Set(staff.map((member) => (member.email || "").toLowerCase()));
+  for (const address of ADMIN_EMAILS) if (!known.has(address)) staff.push({ id: `admin-${address}`, displayName: address === "camiloguerracars@gmail.com" ? "Camilo Guerra Cars" : address.split("@")[0], photoURL: "", email: address, role: "camilo_owner", rpmPoints: 0, badges: [], socialLinks: [] });
+  return staff;
 }
 export async function listAnnouncements(): Promise<Announcement[]> {
   const rows = await getDocs(query(collection(database(), "announcements"), orderBy("expiresAt", "asc"), limit(10)));
