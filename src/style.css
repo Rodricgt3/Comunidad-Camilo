@@ -1639,6 +1639,11 @@ details[open] > summary::after {
   letter-spacing: 0.3px;
 }
 .past-pill { color: #d6d9c8; border-color: #72785b; }
+.announcement-hero { display: flex; gap: 14px; align-items: stretch; overflow: hidden; margin: 14px 0; padding: 0; }
+.announcement-hero img { width: 92px; min-height: 110px; object-fit: cover; }
+.announcement-hero > div { padding: 16px 16px 16px 0; flex: 1; }
+.announcement-hero p { margin: 8px 0; color: #f7f9ee; line-height: 1.45; }
+.announcement-hero small { color: #aeb994; font-size: 10px; }
 .status { color: #c5d856; font-size: 12px; letter-spacing: .08em; }
 .staff-profile-editor { display: grid; gap: 10px; width: 100%; margin-top: 14px; padding-top: 14px; border-top: 1px solid #c5d85633; }
 .staff-profile-editor label { display: grid; gap: 6px; color: #c5d856; font-size: 11px; letter-spacing: .08em; }

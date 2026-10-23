@@ -61,6 +61,13 @@ export interface Post {
   thumbnail: string;
   exclusiveUntil: Timestamp;
 }
+export interface Announcement {
+  id: string;
+  text: string;
+  imageUrl?: string;
+  expiresAt: Timestamp;
+  createdAt?: Timestamp;
+}
 export interface Comment {
   id: string;
   uid: string;

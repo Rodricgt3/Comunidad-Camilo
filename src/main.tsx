@@ -380,6 +380,7 @@ function Garage() {
   const { profile } = useSession();
   const [showWeather, setShowWeather] = useState(true);
   const state = useLoad(() => api.list<Trivia>("trivias", "createdAt", 5), []);
+  const announcements = useLoad(() => api.listAnnouncements(), []);
   return (
     <>
       <div className="weather-row">
@@ -389,6 +390,7 @@ function Garage() {
         </button>
       </div>
       {showWeather && <WeatherHero />}
+      {announcements.data?.map((announcement) => { const image = announcement.imageUrl ? safeUrl(announcement.imageUrl) : ""; return <article className="glass announcement-hero" key={announcement.id}>{image && <img src={image} alt="" loading="lazy" />}<div><span className="eyebrow">MENSAJE DEL GARAGE</span><p>{announcement.text}</p><small>Válido hasta {announcement.expiresAt.toDate().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" })}</small></div></article>; })}
       <div className="greeting">
         <span className="eyebrow">
           <span className="dot" /> EL GARAGE ESTÁ ABIERTO
@@ -1377,6 +1379,7 @@ function Staff() {
             {[
               ["event", CalendarDays, "Crear meet"],
               ["post", Play, "Early access"],
+              ["announcement", Bell, "Publicación común"],
               ["item", ShoppingBag, "Publicar drop"],
               ["access", ShieldCheck, "Equipo Spotters"],
             ].map(([key, Icon, title]) => {
@@ -1451,6 +1454,7 @@ function Staff() {
               trivia: "Trivia flash",
               event: "Crear meet",
               post: "Early access",
+              announcement: "Publicación común",
               item: "Publicar en showroom",
               access: "Equipo de confianza",
             }[modal] || ""
@@ -1705,6 +1709,13 @@ function AdminForm({ kind, done }: { kind: string; done: () => void }) {
           ),
         });
       }
+      if (kind === "announcement") {
+        const imageUrl = s("imageUrl");
+        const hours = Number(s("hours"));
+        if (!Number.isInteger(hours) || hours < 1 || hours > 168) throw new Error("La duración debe ser de 1 a 168 horas.");
+        if (imageUrl && !safeUrl(imageUrl)) throw new Error("La imagen debe usar un enlace HTTPS válido.");
+        await api.create("announcements", { text: s("text"), ...(imageUrl ? { imageUrl: safeUrl(imageUrl) } : {}), expiresAt: api.Timestamp.fromMillis(Date.now() + hours * 3600000) });
+      }
       if (kind === "item") {
         const stock: Record<string, number> = {};
         if (s("category") !== "autos")
@@ -1831,6 +1842,11 @@ function AdminForm({ kind, done }: { kind: string; done: () => void }) {
           />
         </>
       )}
+      {kind === "announcement" && <>
+        <Field name="text" label="Texto de la publicación" maxLength={500} />
+        <Field name="imageUrl" label="URL de imagen (opcional, HTTPS)" type="url" required={false} />
+        <Field name="hours" label="Duración en horas (1–168)" type="number" />
+      </>}
       {kind === "access" && (
         <>
           <p>

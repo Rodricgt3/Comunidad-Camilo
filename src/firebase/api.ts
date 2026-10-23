@@ -35,6 +35,7 @@ import {
   type Item,
   type Submission,
   type Ticket,
+  type Announcement,
 } from "../types";
 const database = () => {
   if (!db) throw new Error("Configura Firebase para conectar el garage.");
@@ -259,6 +260,10 @@ export async function listStaff() {
     query(collection(database(), "users"), where("role", "in", ["camilo_owner", "spotter_mod"]), limit(20)),
   );
   return rows.docs.map((d) => ({ ...d.data(), id: d.id })) as Profile[];
+}
+export async function listAnnouncements(): Promise<Announcement[]> {
+  const rows = await getDocs(query(collection(database(), "announcements"), orderBy("expiresAt", "asc"), limit(10)));
+  return rows.docs.map((d) => ({ ...d.data(), id: d.id }) as Announcement).filter((item) => item.expiresAt.toMillis() > Date.now());
 }
 function randomIndex(max: number) {
   const bound = Math.floor(4294967296 / max) * max;

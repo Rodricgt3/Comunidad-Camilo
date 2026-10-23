@@ -68,6 +68,11 @@ service cloud.firestore {
     allow delete: if staff() || self(resource.data.uid);
    }
   }
+  match /announcements/{id} {
+   allow read: if signed();
+   allow create: if owner() && request.resource.data.keys().hasOnly(['text','imageUrl','expiresAt','createdAt']) && bounded(request.resource.data.text,500) && (!request.resource.data.keys().hasAny(['imageUrl']) || bounded(request.resource.data.imageUrl,2000)) && request.resource.data.expiresAt is timestamp && request.resource.data.expiresAt > request.time && request.resource.data.createdAt == request.time;
+   allow update, delete: if owner();
+  }
   match /marketplace/{id} {
    function order() { return getAfter(/databases/$(database)/documents/orders/$(request.resource.data.lastOrderId)).data; }
    allow read: if true;
