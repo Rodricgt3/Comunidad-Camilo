@@ -1,4 +1,4 @@
-const CACHE = "cg-garage-v1";
+const CACHE = "cg-garage-v2";
 const BUILD_ASSETS = [];
 const SCOPE = new URL("./", self.location.href).href;
 self.addEventListener("install", (event) =>
