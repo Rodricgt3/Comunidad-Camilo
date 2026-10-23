@@ -12,7 +12,6 @@ export interface Profile {
   displayNameChangedAt?: Timestamp;
   bio?: string;
   socialLinks?: { platform: "instagram" | "tiktok" | "youtube"; url: string }[];
-  email?: string;
 }
 export interface Trivia {
   id: string;
