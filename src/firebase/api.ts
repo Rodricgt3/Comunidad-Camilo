@@ -265,7 +265,8 @@ export async function listStaff() {
   const rows = await getDocs(query(collection(database(), "users"), limit(100)));
   const staff = rows.docs.map((d) => ({ ...d.data(), id: d.id }) as Profile).filter((member) => member.role === "camilo_owner" || member.role === "spotter_mod" || ADMIN_EMAILS.includes((member.email || "").toLowerCase()));
   const known = new Set(staff.map((member) => (member.email || "").toLowerCase()));
-  for (const address of ADMIN_EMAILS) if (!known.has(address)) staff.push({ id: `admin-${address}`, displayName: address === "camiloguerracars@gmail.com" ? "Camilo Guerra Cars" : address.split("@")[0], photoURL: "", email: address, role: "camilo_owner", rpmPoints: 0, badges: [], socialLinks: [] });
+  const newOwner = "camiloguerracars@gmail.com";
+  if (!known.has(newOwner) && !staff.some((member) => member.displayName.toLowerCase().includes("camilo"))) staff.push({ id: `admin-${newOwner}`, displayName: "Camilo Guerra Cars", photoURL: "", email: newOwner, role: "camilo_owner", rpmPoints: 0, badges: [], socialLinks: [] });
   return staff;
 }
 export async function listAnnouncements(): Promise<Announcement[]> {
